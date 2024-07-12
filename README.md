@@ -1,7 +1,6 @@
-# RaspberryPi I2S capture as slave
+# Raspberry Pi I2S capture device as slave
 
-**Modified to be used as a capture device for I2S audio in slave mode.  
-The device connecting to the Raspberry Pi will therefore need to be set to master mode.**
+### **Modified to be used as a capture device for I2S audio in slave mode. The device connecting to the Raspberry Pi must therefore need to be set to master mode.**
 
 General I2S slave I/O device tree overlay for Raspberry Pi.  
 Tested with Raspberry pi Compute Module 3+ and Asahi Kasei AK4556.  
