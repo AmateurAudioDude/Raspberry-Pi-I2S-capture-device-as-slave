@@ -1,0 +1,69 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    compatible = "brcm,bcm2835";
+
+    /* Enable the I2S controller */
+    fragment@0 {
+        target = <&i2s>;
+        __overlay__ {
+            status = "okay";
+        };
+    };
+
+    /* Define a simple audio-capture card with the Pi as clock master */
+    fragment@1 {
+        target = <&sound>;
+        __overlay__ {
+            compatible = "simple-audio-card";
+            simple-audio-card,name = "i2s-master-device";
+            status = "okay";
+
+            capture_link: simple-audio-card,dai-link@0 {
+                format = "i2s";
+
+                /* Raspberry Pi will provide both clocks */
+                bitclock-master = <&r_cpu_dai>;
+                frame-master    = <&r_cpu_dai>;
+
+                /* Pi I²S CPU DAI */
+                r_cpu_dai: cpu {
+                    sound-dai = <&i2s>;
+                    dai-tdm-slot-num   = <2>;
+                    dai-tdm-slot-width = <16>;
+                };
+
+                /* Codec (the SI4732 serving as “codec” for capture) */
+                r_codec_dai: codec {
+                    sound-dai = <&codec_in>;
+                    pcm {
+                        format = "i2s";
+                        channels = <2>;
+                        interface = <0>;
+                        rate = <48000>;
+                        slave {
+                            pcm {
+                                rate = <48000>;
+                            };
+                        };
+                    };
+                };
+            };
+        };
+    };
+
+    /* Dummy SPDIF receiver node */
+    fragment@2 {
+        target-path = "/";
+        __overlay__ {
+            codec_in: spdif-receiver {
+                #address-cells = <0>;
+                #size-cells = <0>;
+                #sound-dai-cells = <0>;
+                compatible = "linux,spdif-dir";
+                status = "okay";
+            };
+        };
+    };
+};
